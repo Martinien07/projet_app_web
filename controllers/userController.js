@@ -45,7 +45,15 @@ export const updateUser = async (req, res) => {
     try {
         const user = await User.findByPk(id);
         if (user) {
-            await user.update(updatedUser);
+
+            // Mise à jour sécurisée (pour éviter la modification de champs sensibles)
+            const allowedFields = ["name", "email", "phone", "status"];
+            const safeData = Object.keys(updatedUser)
+            .filter(key => allowedFields.includes(key))
+            .reduce((obj, key) => ({ ...obj, [key]: updatedData[key] }), {});
+
+
+            await user.update(safeData);
             res.status(200).json({ data: user, message: "Utilisateur mis a jour avec succes" });
         } else {
             res.status(404).json({ message: "Utilisateur non trouve" });

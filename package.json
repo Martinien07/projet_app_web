@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/Martinien07/projet_app_web#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
@@ -30,6 +31,8 @@
     "express": "^5.1.0",
     "express-validator": "^7.3.0",
     "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.2",
     "mysql2": "^3.15.3",
     "nodemon": "^3.1.10",
     "promise-mysql": "^5.2.0",

@@ -16,3 +16,13 @@ router.delete('/:id', deleteUser);
 
 
 export default router;
+//exemple pour ajouter utilisation postman json
+/*
+{
+    "name":"John Doe",
+    "email":",
+    "password":"password123",
+    "roleId":1,
+    "departmentId":2
+}
+*/
