@@ -35,7 +35,11 @@ const User=database.define('User',{
     status:{
         type:DataTypes.BOOLEAN,
         defaultValue:true
-    }
+    },
+
+    access:{
+        type:DataTypes.INTEGER,
+        defaultValue:0}  // 0 = user, 1 = admin
     
 
 },
