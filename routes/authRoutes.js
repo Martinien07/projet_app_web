@@ -1,12 +1,14 @@
 //toutes les routes liees aux utilisateurs
 import express from 'express';
-import { login } from '../controllers/authController.js';
-import { authValidationRules } from '../validations/authValidator.js';
+import { changementPassword, login } from '../controllers/authController.js';
+import { authValidationRules, passwordValidationRules } from '../validations/authValidator.js';
 import { protect } from '../middlewares/authMiddleware.js';
+
+
 const router = express.Router();
 //Route pour la connexion
 router.post('/login',protect, authValidationRules, login);
-
+router.put("/change-password/:userId", protect,passwordValidationRules, changementPassword);
 
 export default router;
 

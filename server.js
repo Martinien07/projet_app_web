@@ -5,6 +5,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import database from './config/connection.js';
 import userRoutes from './routes/userRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 
 // console.log("Lancement du serveur...",dotenv.config());
@@ -22,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // 
 //Creation des tables
-//database.sync({ alter: true })
+database.sync({ alter: true })
 
 
 //Route de test
@@ -33,6 +35,17 @@ app.get('/', (req, res) => {
 //Route pour les utilisateurs à partir de userRoutes.js
 app.use('/api/users', userRoutes);
 
+
+
+
+//Route pour les utilisateurs à partir de userRoutes.js
+app.use('/api/users', userRoutes);
+
+//Route pour l'authentification à partir de authRoutes.js
+app.use('/api/auth', authRoutes);
+
+//Route pour les actions admin à partir de adminRoutes.js
+app.use('/api/admin', adminRoutes);
 
 
 //Demarrer le serveur

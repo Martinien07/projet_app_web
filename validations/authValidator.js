@@ -17,4 +17,9 @@ export const validateUser = (req, res, next) => {
 }
 
 
+export const passwordValidationRules = () => {
+    return [
+        body('password').isLength({ min: 12 }).withMessage('Le mot de passe doit contenir au moins 12 caractères'),
+    ];
+}
 
