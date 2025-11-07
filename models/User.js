@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+import bcrypt from "bcrypt";
 import database from "../config/connection.js"
 import { DataTypes } from "sequelize"  
 
