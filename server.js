@@ -5,11 +5,14 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import database from './config/connection.js';
 
+// Charger les relations Sequelize (TRÈS IMPORTANT)
+import "./models/relations.js";
+
 // Import des routes
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
-import notificationRoutes from "./routes/notificationRoutes.js"; //  AJOUT
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 // Initialisation
 const app = express();
@@ -35,7 +38,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 
-// 👇 ROUTES NOTIFICATIONS
+// Routes notifications
 app.use("/api/notifications", notificationRoutes);
 
 // Démarrage du serveur
