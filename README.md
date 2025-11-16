@@ -13,20 +13,6 @@ Objectifs :
 
 ---
 
-## Structure du projet
-projet_app_web/
-│
-├─ src/
-│ ├─ controllers/ # Logique métier (CRUD, auth, notifications...)
-│ ├─ middlewares/ # Middlewares (auth, validation...)
-│ ├─ models/ # Modèles Sequelize (User, Role, Chantier, Assignment...)
-│ ├─ routes/ # Définition des endpoints
-│ └─ config/ # Config DB et variables d'environnement
-│
-├─ package.json
-├─ .env # Variables sensibles (JWT_SECRET, DB config)
-└─ README.md
-
 
 
 ---
@@ -95,6 +81,20 @@ JWT_SECRET=cle_super_secrete
 PORT=5000
 
 
+## Structure du projet
+projet_app_web/
+│
+├─ src/
+│ ├─ controllers/ # Logique métier (CRUD, auth, notifications...)
+│ ├─ middlewares/ # Middlewares (auth, validation...)
+│ ├─ models/ # Modèles Sequelize (User, Role, Chantier, Assignment...)
+│ ├─ routes/ # Définition des endpoints
+│ └─ config/ # Config DB et variables d'environnement
+│
+├─ package.json
+├─ .env # Variables sensibles (JWT_SECRET, DB config)
+└─ README.md
+
 ---
 ## Endpoints principaux
 
@@ -115,6 +115,8 @@ Endpoint	Méthode	Description
 /api/notifications	POST	Envoyer une notification
 /api/notifications	GET	Lister les notifications reçues
 ---
+
+
 
  Conventions
 
