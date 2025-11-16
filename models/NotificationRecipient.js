@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../config/db.js";
+import sequelize from "../config/connection.js";
+
 
 /**
   Table de liaison entre Notification et User
