@@ -1,7 +1,6 @@
-
+import User from "./User.js";
 import Notification from "./Notification.js";
 import NotificationRecipient from "./NotificationRecipient.js";
-import User from "./User.js";
 
 /**
  * Relations pour les notifications
@@ -19,7 +18,7 @@ Notification.belongsTo(User, {
   as: "targetUser",
 });
 
-// 3) Une notification peut avoir plusieurs destinataires (pour scope = list ou chantier)
+// 3) Une notification peut avoir plusieurs destinataires
 Notification.hasMany(NotificationRecipient, {
   foreignKey: "notificationId",
   as: "recipients",
@@ -30,3 +29,5 @@ NotificationRecipient.belongsTo(User, {
   foreignKey: "userId",
   as: "recipient",
 });
+
+export { User, Notification, NotificationRecipient };
