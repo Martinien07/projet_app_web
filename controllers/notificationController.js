@@ -32,7 +32,6 @@ export const createNotification = async (req, res) => {
     // 2) Génération des destinataires selon le scope
     let usersToNotify = [];
 
-    // Scope = "user" (un seul utilisateur)
     if (scope === "user") {
       if (!targetUserId) {
         return res.status(400).json({ message: "targetUserId est requis pour une notification utilisateur" });
@@ -40,7 +39,6 @@ export const createNotification = async (req, res) => {
       usersToNotify.push(targetUserId);
     }
 
-    // Scope = "list" (liste de plusieurs utilisateurs)
     if (scope === "list") {
       if (!recipients || !Array.isArray(recipients)) {
         return res.status(400).json({ message: "recipients doit être une liste d'IDs" });
@@ -48,18 +46,14 @@ export const createNotification = async (req, res) => {
       usersToNotify = recipients;
     }
 
-    // Scope = "chantier"
     if (scope === "chantier") {
       if (!chantierId) {
         return res.status(400).json({ message: "chantierId requis pour notifier un chantier" });
       }
-
-      //  À adapter selon votre relation User–Chantier
       const chantierUsers = await User.findAll({ where: { chantierId } });
       usersToNotify = chantierUsers.map(u => u.id);
     }
 
-    // Scope = "global" → tous les utilisateurs
     if (scope === "global") {
       const allUsers = await User.findAll();
       usersToNotify = allUsers.map(u => u.id);
@@ -122,4 +116,16 @@ export const markAsRead = async (req, res) => {
     });
 
     if (!record) {
-      return res.status(404).json({ message:
+      return res.status(404).json({ message: "Notification non trouvée pour cet utilisateur" });
+    }
+
+    record.isRead = true;
+    record.readAt = new Date();
+    await record.save();
+
+    return res.json({ message: "Notification marquée comme lue" });
+
+  } catch (error) {
+    res.status(500).json({ message: "Erreur serveur", error });
+  }
+};
