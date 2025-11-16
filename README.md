@@ -95,7 +95,7 @@ JWT_SECRET=cle_super_secrete
 PORT=5000
 
 
-
+---
 ## Endpoints principaux
 
 Endpoint	Méthode	Description
@@ -114,7 +114,7 @@ Endpoint	Méthode	Description
 /api/inspections	GET	Lister les inspections par chantier
 /api/notifications	POST	Envoyer une notification
 /api/notifications	GET	Lister les notifications reçues
-
+---
 
  Conventions
 
