@@ -1,6 +1,6 @@
 import User from "./User.js";
 import Chantier from "./Chantier.js";
-import Role from "./Role.js";
+import Role from "./Roles.js";
 import Assignment from "./Assignment.js";
 
 // défifinition des relations plusieurs a plusieurs entre les modeles
