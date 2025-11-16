@@ -24,4 +24,5 @@ User.hasMany(Assignment, { foreignKey: 'userId' });
 Chantier.hasMany(Assignment, { foreignKey: 'chantierId' });
 Role.hasMany(Assignment, { foreignKey: 'roleId' });
 
+export { User, Chantier, Role, Assignment };
 

@@ -1,7 +1,8 @@
 //import { User } from "../models/relation.js";
 
 // recupérer tous les utilisateurs
-import User from "../models/User.js";
+//import User from "../models/User.js";
+import  { User } from "../models/relation.js";
 export const getAllUsers = async (req, res) => {
 
     try {  
