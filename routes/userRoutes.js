@@ -7,7 +7,7 @@ const router = express.Router();
 //Route pour recuperer tous les utilisateurs
 router.get('/',protect, getAllUsers);
 //Route pour ajouter un utilisateur
-router.post('/',protect, userValidationRules(), validateUser, addUser);
+router.post('/', userValidationRules(), validateUser, addUser);
 //Route pour recuperer un utilisateur par son id
 router.get('/:id',protect, getUserById);
 //Route pour modifier un utilisateur

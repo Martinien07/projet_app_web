@@ -8,7 +8,6 @@ export const userValidationRules = () => {
         body('name').notEmpty().withMessage('Le nom est obligatoire'),
         body('email').isEmail().withMessage("L'email n'est pas valide"),
         body('password').isLength({ min: 12 }).withMessage('Le mot de passe doit contenir au moins 12 caractères'),
-        body('role').isIn(['admin', 'maitre_oeuvre', 'sous_traitant', 'inspecteur']).withMessage('Le rôle utilisateur n\'est pas valide'),
     ];
 }
 export const validateUser = (req, res, next) => {
