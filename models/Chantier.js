@@ -24,7 +24,7 @@ const Chantier=database.define('Chantier',{
         allowNull:false
     },
     status:{
-        type:DataTypes.ENUM('en_cours','terminé','en_pause'),
+        type:DataTypes.ENUM('en_cours','termine','en_pause'),
         defaultValue:'en_cours'
     },
     createdAt:{

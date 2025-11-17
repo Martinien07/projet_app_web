@@ -1,55 +1,54 @@
-// This is the Assignment model
-
+// models/Assignment.js
 import database from "../config/connection.js"
 import { DataTypes } from "sequelize"
 
-/*
-id INTEGER
-
-userId INTEGER
-
-chantierId INTEGER
-
-roleId INTEGER
-
-assignedAt DATE
-
-isActive BOOLEAN
-
-createdAt DATE
-
-updatedAt DATE
-*/
-
-const Assignment=database.define('Assignment',{
-    userId:{
-        type:DataTypes.INTEGER,
-        allowNull:false
-    },
-    chantierId:{
-        type:DataTypes.INTEGER,
-        allowNull:false
-    },
-    roleId:{
-        type:DataTypes.INTEGER,
-        allowNull:false
-    },
-    assignedAt:{
-        type:DataTypes.DATE,
-        allowNull:false
-    },
-    isActive:{
-        type:DataTypes.BOOLEAN,
-        defaultValue:true
-    },
-    createdAt:{
-        type:DataTypes.DATE,
-        defaultValue:DataTypes.NOW
-    },
-    updatedAt:{
-        type:DataTypes.DATE,
-        defaultValue:DataTypes.NOW
+const Assignment = database.define('Assignment', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
     }
+  },
+  chantierId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Chantiers',
+      key: 'id'
+    }
+  },
+  roleId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Roles',
+      key: 'id'
+    }
+  },
+  assignedAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
+  },
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
+  }
+}, {
+  tableName: 'assignments',
+  timestamps: false,
+  indexes: [
+    {
+      unique: true,
+      fields: ['userId', 'chantierId']
+    }
+  ]
 });
 
 export default Assignment;
