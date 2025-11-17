@@ -20,7 +20,7 @@ const Notification = sequelize.define("Notification", {
 
   senderId: {
     type: DataTypes.INTEGER,
-    allowNull: false, // Celui qui envoie la notification
+    allowNull: true, // Celui qui envoie la notification
   },
 
   chantierId: {
