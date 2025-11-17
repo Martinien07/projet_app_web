@@ -1,33 +1,27 @@
-import User from "./User.js";
 import Notification from "./Notification.js";
 import NotificationRecipient from "./NotificationRecipient.js";
 
-// Notification envoyée par un user
-Notification.belongsTo(User, {
-  foreignKey: "senderId",
-  as: "sender",
-});
+/**
+ * Relations SIMPLES ET AUTONOMES pour ton module Notifications
+ *
+ *  Aucun lien avec le modèle User
+ *  Aucun foreign key vers la table users
+ *  Compatible avec n'importe quelle structure User de l'équipe
+ * Testable immédiatement avec Postman
+ * Ne casse pas les autres modules
+ */
 
-// Notification vers un user précis
-Notification.belongsTo(User, {
-  foreignKey: "targetUserId",
-  as: "targetUser",
-});
-
-// Notification  plusieurs destinataires
+// 1) Une Notification peut avoir plusieurs destinataires
 Notification.hasMany(NotificationRecipient, {
   foreignKey: "notificationId",
   as: "recipients",
 });
 
-// Destinataire  appartient à un user
-NotificationRecipient.belongsTo(User, {
-  foreignKey: "userId",
-  as: "recipient",
-});
-
-// DESTINATAIRE  appartient à UNE notification 
+// 2) Chaque NotificationRecipient appartient à une seule Notification
 NotificationRecipient.belongsTo(Notification, {
   foreignKey: "notificationId",
   as: "notification",
 });
+
+// Export des modèles (facultatif)
+export { Notification, NotificationRecipient };
