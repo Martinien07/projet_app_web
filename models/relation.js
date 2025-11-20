@@ -1,14 +1,28 @@
 import User from "./User.js";
+import Chantier from "./Chantier.js";
+import Role from "./Roles.js";
+import Assignment from "./Assignment.js";
 
+// défifinition des relations plusieurs a plusieurs entre les modeles
 
-//Definition des relations plusieurs a plusieurs entre les modeles
-//DUser.belongsToMany(Role, { through: "UserRoles" }) //Un user a un role
+// relation pivot entre User et Role via Assignment
+// Relation entre User et Chantier via Assignment
+User.belongsToMany(Chantier, { through: Assignment, foreignKey: 'userId' });
+Chantier.belongsToMany(User, { through: Assignment, foreignKey: 'chantierId' });
 
-//DRole.belongsToMany(User, { through: "UserRoles" }); //Un role appartient a un user
+// Relation entre Role et User via Assignment
+Role.belongsToMany(User, ({through : Assignment, foreignKey: 'roleId'}));
+User.belongsToMany(Role, ({through : Assignment, foreignKey: 'userId'}));
 
-// Relations un vers plusieurs entre Department et User
+//relation de assignment vers les autres modeles
+Assignment.belongsTo(User, { foreignKey: 'userId' });
+Assignment.belongsTo(Chantier, { foreignKey: 'chantierId' });
+Assignment.belongsTo(Role, { foreignKey: 'roleId' });
 
-//DDepartment.hasMany(User)
-//DUser.belongsTo(Department)
+// relation inverse
+User.hasMany(Assignment, { foreignKey: 'userId' });
+Chantier.hasMany(Assignment, { foreignKey: 'chantierId' });
+Role.hasMany(Assignment, { foreignKey: 'roleId' });
 
-//Dexport { User, Role, Department };
+export { User, Chantier, Role, Assignment };
+
