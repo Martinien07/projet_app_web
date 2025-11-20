@@ -14,6 +14,23 @@ Chantier.belongsToMany(User, { through: Assignment, foreignKey: 'chantierId' });
 Role.belongsToMany(User, ({through : Assignment, foreignKey: 'roleId'}));
 User.belongsToMany(Role, ({through : Assignment, foreignKey: 'userId'}));
 
+
+  // Dans votre fichier relation.js
+Assignment.belongsTo(User, { foreignKey: 'userId' });
+Assignment.belongsTo(Chantier, { foreignKey: 'chantierId' });
+// Assignment.belongsTo(Role, { foreignKey: 'roleId' });
+
+User.hasMany(Assignment, { foreignKey: 'userId' });
+Chantier.hasMany(Assignment, { foreignKey: 'chantierId' });
+// Role.hasMany(Assignment, { foreignKey: 'roleId' });
+
+Incident.belongsTo(Chantier, { foreignKey: 'chantierId' });
+Incident.belongsTo(User, { foreignKey: 'reportedBy', as: 'Reporter' });
+
+Chantier.hasMany(Incident, { foreignKey: 'chantierId' });
+User.hasMany(Incident, { foreignKey: 'reportedBy', as: 'ReportedIncidents' });
+
+export { User, Chantier, Assignment, Incident };
 //relation de assignment vers les autres modeles
 Assignment.belongsTo(User, { foreignKey: 'userId' });
 Assignment.belongsTo(Chantier, { foreignKey: 'chantierId' });

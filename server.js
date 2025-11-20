@@ -8,6 +8,8 @@ import userRoutes from './routes/userRoutes.js';
 import assignmentRoutes from './routes/assignmentRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import chantierRoutes from './routes/chantierRoute.js';
+import incidentRoutes from './routes/incidentRoutes.js';
 
 
 // console.log("Lancement du serveur...",dotenv.config());
@@ -48,6 +50,13 @@ app.use('/api/auth', authRoutes);
 
 //Route pour les actions admin à partir de adminRoutes.js
 app.use('/api/admin', adminRoutes);
+
+
+// Route pour les chantiers à partir de chantierRoutes.js
+app.use('/api/chantiers', chantierRoutes);
+
+// Route pour les incidents à partir de incidentRoutes.js
+app.use('/api/incidents', incidentRoutes);
 
 
 //Demarrer le serveur
