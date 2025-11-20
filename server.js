@@ -34,7 +34,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 
 // ##############################################################    NOUVELLE ROUTE POUR LES INSPECTIONS
-app.use('/api/inspections', inspectionRoutes);
+app.use('/api/inspections', inspectionRoutes);``
 
 app.listen(PORT, () => {
   console.log(`Le serveur a demarre sur le port ${PORT}`);
