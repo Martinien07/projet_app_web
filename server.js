@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
 });
 
 //Route pour les utilisateurs à partir de userRoutes.js
-app.use('/api/as', userRoutes);
+// app.use('/api/as', userRoutes);
 
 
 //Route pour les assignement à partir de assignmentRoutes.js
