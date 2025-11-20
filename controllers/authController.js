@@ -27,7 +27,7 @@ export const login = async (req, res) => {
     const token = jwt.sign(
       { id: user.id, email: user.email, access: user.access },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "200h" }
     );
 
     // Si le mot de passe correspond au reset default

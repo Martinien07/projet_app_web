@@ -23,7 +23,7 @@ const Role=database.define('Role',{
     description:{
         type:DataTypes.STRING,
         allowNull:false,
-        unique:true,
+        //unique:true,
     }
     
 

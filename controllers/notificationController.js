@@ -1,5 +1,5 @@
-import Notification from "../models/Notification.js";
-import NotificationRecipient from "../models/NotificationRecipient.js";
+import { Notification } from "../models/relation.js";
+import { NotificationRecipient } from "../models/relation.js";
 
 /**
  * CRÉATION D’UNE NOTIFICATION (AUTONOME)
@@ -84,6 +84,106 @@ export const createNotification = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur", error });
   }
 };
+
+
+
+//
+
+// controllers/notificationController.js
+
+
+export const notificationController = {
+
+  /**
+   * GET /api/notifications
+   * Filtres : read, scope, level
+   */
+  async getAll(req, res) {
+    try {
+      const {
+        read = "all",       // all, read, unread
+        scope = "all",      // user, chantier, global, list
+        level = "all",      // all, private, hprivate
+        userId,             // obligatoire si scope=user ou list
+        chantierId          // obligatoire si scope=chantier
+      } = req.query;
+
+      const where = {};
+
+      // --- FILTRE READ ---
+      if (read === "read") {
+        where.isRead = true;
+      } else if (read === "unread") {
+        where.isRead = false;
+      }
+
+      // --- FILTRE SCOPE ---
+      if (scope !== "all") {
+        where.scope = scope;
+      }
+
+      // Spécificité : filtrage des destinataires
+      if (scope === "user") {
+        if (!userId) {
+          return res.status(400).json({ message: "userId est requis pour scope=user" });
+        }
+        where.targetUserId = userId;
+      }
+
+      if (scope === "chantier") {
+        if (!chantierId) {
+          return res.status(400).json({ message: "chantierId est requis pour scope=chantier" });
+        }
+        where.chantierId = chantierId;
+      }
+
+      if (scope === "list") {
+        if (!userId) {
+          return res.status(400).json({ message: "userId est requis pour scope=list" });
+        }
+        // cible est une liste → targetUserId contient une liste JSON
+        where.targetUserId = {
+          [Op.like]: `%"${userId}"%`
+        };
+      }
+
+      // --- FILTRE LEVEL ---
+      if (level !== "all") {
+        where.level = level;
+      }
+
+      // --- FETCH ---
+      const notifications = await Notification.findAll({
+        where,
+        order: [["createdAt", "DESC"]],
+      });
+
+      return res.json({ data: notifications });
+
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Erreur serveur" });
+    }
+  },
+
+};
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

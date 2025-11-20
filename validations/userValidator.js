@@ -3,14 +3,40 @@
 import { body } from 'express-validator';
 import { validationResult } from 'express-validator';
 
+import { User } from "../models/relation.js";
+
 export const userValidationRules = () => {
     return [
-        body('name').notEmpty().withMessage('Le nom est obligatoire'),
-        body('email').isEmail().withMessage("L'email n'est pas valide"),
-        body('password').isLength({ min: 12 }).withMessage('Le mot de passe doit contenir au moins 12 caractères'),
-        body('role').isIn(['admin', 'maitre_oeuvre', 'sous_traitant', 'inspecteur']).withMessage('Le rôle utilisateur n\'est pas valide'),
+        // Nom
+        body('name')
+            .notEmpty().withMessage('Le nom est obligatoire')
+            .isLength({ min: 2 }).withMessage('Le nom doit contenir au moins 2 caractères'),
+
+        // Email
+        body('email')
+            .notEmpty().withMessage("L'email est obligatoire")
+            .isEmail().withMessage("L'email n'est pas valide")
+            .custom(async (value) => {
+                const existingUser = await User.findOne({ where: { email: value } });
+                if (existingUser) {
+                    throw new Error("Cet email est déjà utilisé");
+                }
+                return true;
+            }),
+
+        // Mot de passe
+        body('password')
+            .isLength({ min: 12 })
+            .withMessage('Le mot de passe doit contenir au moins 12 caractères'),
+
+        // Téléphone
+        body('phone')
+            .optional()
+            .isMobilePhone("any")
+            .withMessage('Le numéro de téléphone est invalide'),
     ];
-}
+};
+
 export const validateUser = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

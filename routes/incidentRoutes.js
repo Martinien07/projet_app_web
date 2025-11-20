@@ -18,7 +18,7 @@ import { protect, requireRole } from '../middlewares/authMiddleware.js';
 // Déclarer un incident (Ouvrier/Superviseur)
 router.post('/',
     protect,
-    requireRole('ouvrier', 'superviseur'),
+    //requireRole('ouvrier', 'superviseur'),
     body('chantierId').isInt({ min: 1 }).withMessage('ID de chantier invalide'),
     body('title').notEmpty().withMessage('Le titre est requis').isLength({ min: 5, max: 200 }),
     body('description').notEmpty().withMessage('La description est requise'),

@@ -59,7 +59,7 @@ export const addChantier = async (req, res) => {
       statut: 'actif'
     });
 
-    // Ajouter l'utilisateur créateur comme assigné au chantier via la table Assignments
+    /* Ajouter l'utilisateur créateur comme assigné au chantier via la table Assignments
     if (req.user && req.user.id) {
       await Assignment.create({
         userId: req.user.id,
@@ -68,7 +68,7 @@ export const addChantier = async (req, res) => {
         assignedAt: new Date(),
         isActive: true
       });
-    }
+    }*/
 
     res.status(201).json({ 
       data: createdChantier, 

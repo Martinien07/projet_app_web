@@ -3,43 +3,88 @@ import Chantier from "./Chantier.js";
 import Role from "./Roles.js";
 import Assignment from "./Assignment.js";
 import Incident from "./Incident.js";
+import Inspection from "./Inspection.js";
+import Notification from "./Notification.js";
+import NotificationRecipient from "./NotificationRecipient.js";
 
-// défifinition des relations plusieurs a plusieurs entre les modeles
-
-// relation pivot entre User et Role via Assignment
-// Relation entre User et Chantier via Assignment
-User.belongsToMany(Chantier, { through: Assignment, foreignKey: 'userId' });
-Chantier.belongsToMany(User, { through: Assignment, foreignKey: 'chantierId' });
-
-// Relation entre Role et User via Assignment
-Role.belongsToMany(User, ({through : Assignment, foreignKey: 'roleId'}));
-User.belongsToMany(Role, ({through : Assignment, foreignKey: 'userId'}));
+// RELATIONS MANY-TO-MANY VIA ASSIGNMENT
 
 
-  // Dans votre fichier relation.js
-Assignment.belongsTo(User, { foreignKey: 'userId' });
-Assignment.belongsTo(Chantier, { foreignKey: 'chantierId' });
-// Assignment.belongsTo(Role, { foreignKey: 'roleId' });
+// User <-> Chantier (via Assignment)
+User.belongsToMany(Chantier, { through: Assignment, foreignKey: "userId" });
+Chantier.belongsToMany(User, { through: Assignment, foreignKey: "chantierId" });
 
-User.hasMany(Assignment, { foreignKey: 'userId' });
-Chantier.hasMany(Assignment, { foreignKey: 'chantierId' });
-// Role.hasMany(Assignment, { foreignKey: 'roleId' });
+// User <-> Role (via Assignment)
+User.belongsToMany(Role, { through: Assignment, foreignKey: "userId" });
+Role.belongsToMany(User, { through: Assignment, foreignKey: "roleId" });
 
-Incident.belongsTo(Chantier, { foreignKey: 'chantierId' });
-Incident.belongsTo(User, { foreignKey: 'reportedBy', as: 'Reporter' });
+// Role <-> Chantier (via Assignment) — optionnel selon besoins
+Role.belongsToMany(Chantier, { through: Assignment, foreignKey: "roleId" });
+Chantier.belongsToMany(Role, { through: Assignment, foreignKey: "chantierId" });
 
-Chantier.hasMany(Incident, { foreignKey: 'chantierId' });
-User.hasMany(Incident, { foreignKey: 'reportedBy', as: 'ReportedIncidents' });
 
-//relation de assignment vers les autres modeles
-Assignment.belongsTo(User, { foreignKey: 'userId' });
-Assignment.belongsTo(Chantier, { foreignKey: 'chantierId' });
-Assignment.belongsTo(Role, { foreignKey: 'roleId' });
+/*------------------------------------------
+ RELATIONS DIRECTES AVEC ASSIGNMENT
+------------------------------------------*/
 
-// relation inverse
-User.hasMany(Assignment, { foreignKey: 'userId' });
-Chantier.hasMany(Assignment, { foreignKey: 'chantierId' });
-Role.hasMany(Assignment, { foreignKey: 'roleId' });
+Assignment.belongsTo(User, { foreignKey: "userId" });
+Assignment.belongsTo(Chantier, { foreignKey: "chantierId" });
+Assignment.belongsTo(Role, { foreignKey: "roleId" });
 
-export { User, Chantier, Assignment, Incident, Role };
+User.hasMany(Assignment, { foreignKey: "userId" });
+Chantier.hasMany(Assignment, { foreignKey: "chantierId" });
+Role.hasMany(Assignment, { foreignKey: "roleId" });
 
+
+/*------------------------------------------
+  RELATIONS INCIDENT
+------------------------------------------*/
+
+Incident.belongsTo(Chantier, { foreignKey: "chantierId" });
+Incident.belongsTo(User, { foreignKey: "reportedBy", as: "Reporter" });
+
+Chantier.hasMany(Incident, { foreignKey: "chantierId" });
+User.hasMany(Incident, { foreignKey: "reportedBy", as: "ReportedIncidents" });
+
+
+/*------------------------------------------
+  RELATIONS INSPECTION  ← AJOUTÉES ICI
+------------------------------------------*/
+
+// Une inspection appartient à un chantier
+Inspection.belongsTo(Chantier, { foreignKey: "chantierId" });
+
+// Une inspection est réalisée par un user (inspecteur)
+Inspection.belongsTo(User, { foreignKey: "inspectorId", as: "Inspector" });
+
+// Relation inverse
+Chantier.hasMany(Inspection, { foreignKey: "chantierId" });
+User.hasMany(Inspection, { foreignKey: "inspectorId", as: "Inspections" });
+
+
+/*------------------------------------------
+  RELATIONS NOTIFICATION (optionnel)
+------------------------------------------*/
+
+Notification.belongsTo(User, { foreignKey: "senderId", as: "Sender" });
+Notification.belongsTo(Chantier, { foreignKey: "chantierId" });
+Notification.hasMany(NotificationRecipient, { foreignKey: "notificationId" });
+
+NotificationRecipient.belongsTo(Notification, { foreignKey: "notificationId" });
+NotificationRecipient.belongsTo(User, { foreignKey: "userId" });
+
+
+/*------------------------------------------
+ EXPORTS
+------------------------------------------*/
+
+export {
+  User,
+  Role,
+  Chantier,
+  Assignment,
+  Incident,
+  Inspection,
+  Notification,
+  NotificationRecipient
+};

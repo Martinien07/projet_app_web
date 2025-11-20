@@ -31,31 +31,36 @@ export const addAssignment = async (req, res) => {
 }
 
 
-// recupérer un assignment par son id
+// recupérer un assignment par son idde l'utilisateur
 export const getAssignmentById = async (req, res) => {
-    const { id } = req.params;
+    const { userId } = req.params; // on récupère le userId depuis l'URL
     try {
-        const assignment = await Assignment.findByPk(id, {
-            include: [    
+        const assignments = await Assignment.findAll({
+            where: { userId },
+            include: [
                 { model: User, attributes: ['id', 'name', 'email'] },
                 { model: Chantier, attributes: ['id', 'name'] },
                 { model: Role, attributes: ['id', 'name'] }
             ]
         });
-        res.status(200).json({ data: assignment })
-    }
-    catch (error) {
-        res.status(404).json({ message: error.message })
-    }
 
-}
+        if (!assignments || assignments.length === 0) {
+            return res.status(404).json({ message: "Aucune affectation trouvée pour cet utilisateur." });
+        }
+
+        res.status(200).json({ data: assignments });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 //modifier un assignment
 
 export const updateAssignment = async (req, res) => {
-   const { id } = req.params;
+   const { userId } = req.params;
     const updatedAssignment = req.body;
     try {
-        const assignment = await Assignment.findByPk(id);
+        const assignment = await Assignment.findOne({where: { userId }});
         if (assignment) {
             await assignment.update(updatedAssignment);
             res.status(200).json({ data: assignment, message: "Assignment mis a jour avec succes" });

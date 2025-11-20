@@ -8,7 +8,7 @@ import { protect, requireRole } from '../middlewares/authMiddleware.js';
 // Creer un nouveau chantier (Admin/Superviseur)
 router.post('/',
     protect,
-    requireRole('admin', 'superviseur'),
+    //requireRole('admin', 'superviseur'),
     body('name').notEmpty().withMessage('Le nom est requis').isLength({ min: 3, max: 150 }),
     body('location').notEmpty().withMessage('L\'adresse est requise'),
     body('description').optional().trim(),
@@ -102,7 +102,7 @@ router.delete('/:chantierId/remove-user/:userId',
 // Mettre à jour un chantier (Admin/Superviseur)
 router.put('/:id',
     protect,
-    requireRole('admin', 'superviseur'),
+    //requireRole('admin', 'superviseur'),
     param('id').isInt({ min: 1 }).withMessage('ID invalide'),
     body('name').optional().trim().isLength({ min: 3, max: 150 }),
     body('location').optional().trim().isLength({ min: 5 }),

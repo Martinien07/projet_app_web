@@ -4,8 +4,7 @@ import express from 'express';
 
 
 import { getAllAssignments, addAssignment, getAssignmentById, updateAssignment, deleteAssignment } from '../controllers/assignmentController.js';
-import { assignmentValidationRules, validateAssignment, checkUserAndChantierExist, 
-checkDuplicateAssignment } from '../validations/assignmentValidator.js';
+import { validateAssignment, validateAssignmentUpdate } from '../validations/assignmentValidator.js';
 
 
 import { protect } from '../middlewares/authMiddleware.js';
@@ -14,15 +13,13 @@ const router = express.Router();
 router.get('/',protect, getAllAssignments);
 
 //Route pour ajouter un assignments
-router.post('/',protect, assignmentValidationRules, 
-checkUserAndChantierExist, checkDuplicateAssignment, addAssignment);
+router.post('/',protect, validateAssignment, addAssignment);
 
-//Route pour recuperer un assignments par son id
-router.get('/:id',protect, getAssignmentById);
+//Route pour recuperer un assignments par userId
+router.get('/:userId',protect, getAssignmentById);
 //Route pour modifier un assignments
 
-router.put('/:id',protect, assignmentValidationRules, 
-checkUserAndChantierExist, checkDuplicateAssignment, updateAssignment);
+router.put('/:userId',protect,validateAssignmentUpdate, updateAssignment);
 
 
 //Route pour supprimer un assignments
