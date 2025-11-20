@@ -1,23 +1,17 @@
-//Importer le module qui permet de lire les variables d'environnement
-import dotenv from 'dotenv'
+import { Sequelize } from "sequelize";
+import dotenv from "dotenv";
 
-//Importer l'ORM Sequelize
-import { Sequelize } from 'sequelize';
+dotenv.config();
 
-//Lecture des variables d'environnement
-const ENV=dotenv.config().parsed; 
+const database = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    dialect: "mysql",      // 🔥 OBLIGATOIRE ! MySQL avec XAMPP
+    logging: false,
+  }
+);
 
-//Definir la connexion a la base de donnees
-
-const connection=new Sequelize(
-    ENV.DB_NAME,
-    ENV.DB_USER,  
-    ENV.DB_PASSWORD,
-    {
-        host:ENV.DB_HOST,   
-        dialect:ENV.DB_DIALECT,
-        // port:ENV.DB_PORT,
-    }
-);  
-
-export default connection;
+export default database;
