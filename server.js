@@ -5,6 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import database from './config/connection.js';
 import userRoutes from './routes/userRoutes.js';
+import assignmentRoutes from './routes/assignmentRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import chantierRoutes from './routes/chantierRoute.js';
@@ -35,10 +36,11 @@ app.get('/', (req, res) => {
 });
 
 //Route pour les utilisateurs à partir de userRoutes.js
-app.use('/api/users', userRoutes);
+app.use('/api/as', userRoutes);
 
 
-
+//Route pour les assignement à partir de assignmentRoutes.js
+app.use('/api/assignment', assignmentRoutes);
 
 //Route pour les utilisateurs à partir de userRoutes.js
 app.use('/api/users', userRoutes);

@@ -1,54 +1,47 @@
-// models/Assignment.js
+import bcrypt from "bcrypt";
 import database from "../config/connection.js"
-import { DataTypes } from "sequelize"
+import { DataTypes } from "sequelize"  
 
-const Assignment = database.define('Assignment', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'Users',
-      key: 'id'
-    }
-  },
-  chantierId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'Chantiers',
-      key: 'id'
-    }
-  },
-  roleId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'Roles',
-      key: 'id'
-    }
-  },
-  assignedAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  },
-  isActive: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: true
-  }
-}, {
-  tableName: 'assignments',
-  timestamps: false,
-  indexes: [
-    {
-      unique: true,
-      fields: ['userId', 'chantierId']
-    }
-  ]
-});
+//Definition du modele Assignment
+/**Table : Assignments (liaison User–Chantier–Rôle)
 
+Champ	Type
+id	INTEGER
+userId	INTEGER
+chantierId	INTEGER
+roleId	INTEGER
+assignedAt	DATE
+isActive	BOOLEAN
+**/
+
+const Assignment=database.define('Assignment',{
+    userId:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+    },
+    chantierId:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+    },
+    roleId:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+    },
+    assignedAt:{
+        type:DataTypes.DATE,
+        defaultValue:DataTypes.NOW
+    },
+    isActive:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:true
+    }
+},
+{timestamps:true}
+)
 export default Assignment;
+
+
+
+
+
+
