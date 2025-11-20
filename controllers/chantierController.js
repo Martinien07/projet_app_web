@@ -1,7 +1,7 @@
-import Chantier from "../models/relation.js";
+import { Chantier, Incident } from "../models/relation.js";
 import Assignment from "../models/Assignment.js"; 
 import { validationResult } from 'express-validator';
-import { sequelize } from "../models/relation.js";
+import { Op, fn, col } from "sequelize";
 
 // récupérer tous les chantiers avec pagination et filtres
 export const getAllChantiers = async (req, res) => {
@@ -16,7 +16,7 @@ export const getAllChantiers = async (req, res) => {
     }
     
     if (search) {
-      whereConditions.nom = { [sequelize.Op.like]: `%${search}%` };
+      whereConditions.nom = { [Op.like]: `%${search}%` };
     }
 
     const { count, rows: chantiers } = await Chantier.findAndCountAll({
@@ -318,7 +318,7 @@ export const markChantierAsCompleted = async (req, res) => {
     const incidentsNonResolus = await Incident.count({
       where: { 
         chantierId: id,
-        statut: { [sequelize.Op.ne]: 'resolu' }
+        statut: { [Op.ne]: 'resolu' }
       }
     });
 
@@ -372,7 +372,7 @@ export const getChantierStats = async (req, res) => {
       attributes: [
         'Role.id',
         'Role.nom',
-        [sequelize.fn('COUNT', sequelize.col('Assignment.id')), 'count']
+        [fn('COUNT', col('Assignment.id')), 'count']
       ]
     });
 

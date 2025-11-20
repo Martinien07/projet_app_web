@@ -1,9 +1,8 @@
 // controllers/incidentController.js
-import Incident from "../models/relation.js";
-import Chantier from "../models/relation.js";
+import { Incident, Chantier } from "../models/relation.js";
 import Assignment from "../models/Assignment.js";
 import { validationResult } from 'express-validator';
-import { sequelize } from "../models/relation.js";
+import { Op } from "sequelize";
 
 // récupérer tous les incidents avec pagination et filtres
 export const getAllIncidents = async (req, res) => {
@@ -26,7 +25,7 @@ export const getAllIncidents = async (req, res) => {
     }
     
     if (search) {
-      whereConditions.title = { [sequelize.Op.like]: `%${search}%` };
+      whereConditions.title = { [Op.like]: `%${search}%` };
     }
 
     // Si l'utilisateur n'est pas admin, seulement les incidents de ses chantiers
@@ -40,7 +39,7 @@ export const getAllIncidents = async (req, res) => {
       });
       
       const chantierIds = userAssignments.map(a => a.chantierId);
-      whereConditions.chantierId = { [sequelize.Op.in]: chantierIds };
+      whereConditions.chantierId = { [Op.in]: chantierIds };
     }
 
     const { count, rows: incidents } = await Incident.findAndCountAll({

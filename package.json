@@ -38,5 +38,6 @@
     "nodemon": "^3.1.10",
     "promise-mysql": "^5.2.0",
     "sequelize": "^6.37.7"
-  }
+  },
+  "devDependencies": {}
 }

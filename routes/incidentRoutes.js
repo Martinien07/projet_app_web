@@ -1,8 +1,8 @@
 // routes/incidentRoutes.js
-const express = require('express');
-const { body, param, query, validationResult } = require('express-validator');
+import express  from 'express';
+import { body, param, query, validationResult } from 'express-validator';
 const router = express.Router();
-const {
+import {
   getAllIncidents,
   declareIncident,
   getIncidentById,
@@ -12,8 +12,8 @@ const {
   updateIncidentStatus,
   markIncidentAsResolved,
   getIncidentStats
-} = require('../controllers/incidentController');
-const { protect, requireRole } = require('../middlewares/authMiddleware');
+} from '../controllers/incidentController.js';
+import { protect, requireRole } from '../middlewares/authMiddleware.js';
 
 // Déclarer un incident (Ouvrier/Superviseur)
 router.post('/',

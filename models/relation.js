@@ -2,6 +2,7 @@ import User from "./User.js";
 import Chantier from "./Chantier.js";
 import Role from "./Roles.js";
 import Assignment from "./Assignment.js";
+import Incident from "./Incident.js";
 
 // défifinition des relations plusieurs a plusieurs entre les modeles
 
@@ -30,7 +31,6 @@ Incident.belongsTo(User, { foreignKey: 'reportedBy', as: 'Reporter' });
 Chantier.hasMany(Incident, { foreignKey: 'chantierId' });
 User.hasMany(Incident, { foreignKey: 'reportedBy', as: 'ReportedIncidents' });
 
-export { User, Chantier, Assignment, Incident };
 //relation de assignment vers les autres modeles
 Assignment.belongsTo(User, { foreignKey: 'userId' });
 Assignment.belongsTo(Chantier, { foreignKey: 'chantierId' });
@@ -41,5 +41,5 @@ User.hasMany(Assignment, { foreignKey: 'userId' });
 Chantier.hasMany(Assignment, { foreignKey: 'chantierId' });
 Role.hasMany(Assignment, { foreignKey: 'roleId' });
 
-export { User, Chantier, Role, Assignment };
+export { User, Chantier, Assignment, Incident, Role };
 

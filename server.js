@@ -8,7 +8,7 @@ import userRoutes from './routes/userRoutes.js';
 import assignmentRoutes from './routes/assignmentRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
-import chantierRoutes from './routes/chantierRoute.js';
+import chantierRoutes from './routes/chantierRoutes.js';
 import incidentRoutes from './routes/incidentRoutes.js';
 
 

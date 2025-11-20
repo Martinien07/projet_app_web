@@ -1,7 +1,7 @@
 // models/Incident.js
 
 import database from "../config/connection.js"
-const { DataTypes } = require('sequelize');
+import { DataTypes } from 'sequelize';
 
 
 const Incident = database.define('Incident', {

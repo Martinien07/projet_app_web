@@ -1,9 +1,9 @@
 // routes/chantierRoutes.js
-const express = require('express');
-const { body, param, query, validationResult } = require('express-validator');
+import express from 'express';
+import { body, param, query, validationResult } from 'express-validator';
 const router = express.Router();
-const chantierController = require('../controllers/chantierController');
-const { protect, requireRole } = require('../middlewares/authMiddleware');
+import * as chantierController from '../controllers/chantierController.js';
+import { protect, requireRole } from '../middlewares/authMiddleware.js';
 
 // Creer un nouveau chantier (Admin/Superviseur)
 router.post('/',
