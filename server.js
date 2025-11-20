@@ -2,7 +2,6 @@ import express from 'express';
 import compression from 'compression';
 import helmet from 'helmet';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import database from './config/connection.js';
 import userRoutes from './routes/userRoutes.js';
 import assignmentRoutes from './routes/assignmentRoutes.js';
@@ -19,7 +18,7 @@ import roleRoutes from './routes/roleRoutes.js';
 
 //Definir le serveur
 const app = express();
-const PORT = dotenv.config().parsed.PORT || 8000;
+const PORT = process.env.PORT || 8000;
 
 //Ajouter les middlewares a express
 app.use(helmet());
