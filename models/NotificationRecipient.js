@@ -13,7 +13,11 @@ const NotificationRecipient = database.define("NotificationRecipient", {
     isRead: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
-    }
+    },
+
+    readAt: {
+    type: DataTypes.DATE
+  },
 });
 
 export default NotificationRecipient;

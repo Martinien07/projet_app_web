@@ -23,10 +23,7 @@ const Notification = sequelize.define("Notification", {
     allowNull: true, // Celui qui envoie la notification
   },
 
-  chantierId: {
-    type: DataTypes.INTEGER,
-    allowNull: true, // Seulement utilisé si scope = chantier
-  },
+
 
   title: {
     type: DataTypes.STRING,
@@ -48,8 +45,8 @@ const Notification = sequelize.define("Notification", {
     allowNull: false,
   },
 
-  targetUserId: {
-    type: DataTypes.INTEGER,
+  target: {
+    type: DataTypes.STRING,
     allowNull: true, // Seulement si scope = user
   },
 

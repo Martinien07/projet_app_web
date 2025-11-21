@@ -67,8 +67,8 @@ User.hasMany(Inspection, { foreignKey: "inspectorId", as: "Inspections" });
 ------------------------------------------*/
 
 Notification.belongsTo(User, { foreignKey: "senderId", as: "Sender" });
-Notification.belongsTo(Chantier, { foreignKey: "chantierId" });
-Notification.hasMany(NotificationRecipient, { foreignKey: "notificationId" });
+Notification.hasMany(NotificationRecipient, { foreignKey: "notificationId",
+  onDelete: "CASCADE" });
 
 NotificationRecipient.belongsTo(Notification, { foreignKey: "notificationId" });
 NotificationRecipient.belongsTo(User, { foreignKey: "userId" });

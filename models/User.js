@@ -43,8 +43,8 @@ const User = database.define(
     indexes: [
       {
         unique: true,
-        fields: ["email"],   // 🔥 IMPORTANT : index stable pour MySQL
-        name: "unique_email", // 🔥 Nom explicite, évite doublons
+        fields: ["email"],   // IMPORTANT : index stable pour MySQL
+        name: "unique_email", // Nom explicite, évite doublons
       },
     ],
 

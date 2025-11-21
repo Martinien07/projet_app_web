@@ -1,82 +1,114 @@
-import { Notification } from "../models/relation.js";
-import { NotificationRecipient } from "../models/relation.js";
+import { where } from "sequelize";
+import { NotificationRecipient, Notification, Assignment, User } from "../models/relation.js";
 
-/**
- * CRÉATION D’UNE NOTIFICATION (AUTONOME)
- * Aucune dépendance à User ou Chantier
- */
+
+//Pour créer une notification 
+
 export const createNotification = async (req, res) => {
   try {
     const {
-      senderId,         // facultatif
+      senderId,
       title,
       message,
-      scope,            // "user" | "list" | "global"
-      level,            // "all" | "private" | "hprivate"
-      targetUserId,     // si scope = user
-      recipients        // si scope = list ou global
+      scope,       // "user" | "chantier" | "list" | "global"
+      level,       // "all" | "private" | "hprivate"
+      target       // userId | chantierId | [ids] | "all"
     } = req.body;
 
-    // Vérification minimale
+    // --- VALIDATIONS MINIMALES ---
     if (!title || !message || !scope) {
       return res.status(400).json({ message: "title, message et scope sont requis" });
     }
 
-    // Création de la notification
+    // Valeur par défaut
+    const finalLevel = level || "all";
+
+   
+    // 1) CREATION DE LA NOTIFICATION
+
     const notification = await Notification.create({
       senderId: senderId || null,
       title,
       message,
       scope,
-      level: level || "all",
-      targetUserId: targetUserId || null
+      level: finalLevel,
+      target: target || "all",
     });
 
-    /** GENERATION DES DESTINATAIRES **/
+  
+    // 2) DÉTERMINATION DES DESTINATAIRES
+
     let usersToNotify = [];
 
-    // Scope: user  un destinataire
+    /** ---- SCOPE : user ---- **/
     if (scope === "user") {
-      if (!targetUserId) {
-        return res.status(400).json({
-          message: "targetUserId est requis lorsque scope = 'user'"
-        });
+      if (!target) {
+        return res.status(400).json({ message: "target doit contenir userId pour scope=user" });
       }
-      usersToNotify.push(targetUserId);
+
+      usersToNotify = [target];
     }
 
-    //  Scope: list  liste d’IDs reçue dans body
+    /** ---- SCOPE : chantier ---- **/
+    if (scope === "chantier") {
+      if (!target) {
+        return res.status(400).json({ message: "target doit être chantierId pour scope=chantier" });
+      }
+
+      const assignments = await Assignment.findAll({
+        where: { chantierId: target }
+      });
+
+      usersToNotify = assignments.map(a => a.userId);
+
+      if (usersToNotify.length === 0) {
+        return res.status(404).json({
+          message: "Aucun utilisateur assigné à ce chantier"
+        });
+      }
+    }
+
+    /** ---- SCOPE : list ---- **/
     if (scope === "list") {
-      if (!Array.isArray(recipients)) {
-        return res.status(400).json({
-          message: "recipients doit être une liste d'IDs"
-        });
+      if (!Array.isArray(target)) {
+        return res.status(400).json({ message: "target doit être une liste d'IDs pour scope=list" });
       }
-      usersToNotify = recipients;
+      usersToNotify = target;
     }
 
-    //  Scope: global → liste d’IDs reçue dans body (tu la gères toi-même)
+    /** ---- SCOPE : global ---- **/
     if (scope === "global") {
-      if (!Array.isArray(recipients)) {
-        return res.status(400).json({
-          message: "Pour scope = 'global', envoie une liste recipients"
-        });
-      }
-      usersToNotify = recipients;
+      const allUsers = await User.findAll({ attributes: ["id"] });
+      usersToNotify = allUsers.map(u => u.id);
     }
 
-    // Création des destinataires
-    const data = usersToNotify.map((id) => ({
+    // Retirer doublons si list + chantier overlappent
+    usersToNotify = [...new Set(usersToNotify)];
+
+
+    // 3) CREATION DES ENREGISTREMENTS DANS NotificationRecipients
+
+    const recipientsData = usersToNotify.map((userId) => ({
       notificationId: notification.id,
-      userId: id
+      recipientId:userId,
+      isRead: false,
+      readAt: null
     }));
 
-    await NotificationRecipient.bulkCreate(data);
+    await NotificationRecipient.bulkCreate(recipientsData);
+
+
+    // 4) REPONSE
+
+
+    const inforRecepients= await User.findAll({ where: {id:usersToNotify },
+                                              attributes:["id","name","email"]
+  })
 
     return res.status(201).json({
       message: "Notification créée avec succès",
       notification,
-      recipients: usersToNotify
+      recipients: inforRecepients
     });
 
   } catch (error) {
@@ -87,165 +119,237 @@ export const createNotification = async (req, res) => {
 
 
 
-//
 
-// controllers/notificationController.js
-
-
-export const notificationController = {
-
-  /**
-   * GET /api/notifications
-   * Filtres : read, scope, level
-   */
-  async getAll(req, res) {
-    try {
-      const {
-        read = "all",       // all, read, unread
-        scope = "all",      // user, chantier, global, list
-        level = "all",      // all, private, hprivate
-        userId,             // obligatoire si scope=user ou list
-        chantierId          // obligatoire si scope=chantier
-      } = req.query;
-
-      const where = {};
-
-      // --- FILTRE READ ---
-      if (read === "read") {
-        where.isRead = true;
-      } else if (read === "unread") {
-        where.isRead = false;
-      }
-
-      // --- FILTRE SCOPE ---
-      if (scope !== "all") {
-        where.scope = scope;
-      }
-
-      // Spécificité : filtrage des destinataires
-      if (scope === "user") {
-        if (!userId) {
-          return res.status(400).json({ message: "userId est requis pour scope=user" });
-        }
-        where.targetUserId = userId;
-      }
-
-      if (scope === "chantier") {
-        if (!chantierId) {
-          return res.status(400).json({ message: "chantierId est requis pour scope=chantier" });
-        }
-        where.chantierId = chantierId;
-      }
-
-      if (scope === "list") {
-        if (!userId) {
-          return res.status(400).json({ message: "userId est requis pour scope=list" });
-        }
-        // cible est une liste → targetUserId contient une liste JSON
-        where.targetUserId = {
-          [Op.like]: `%"${userId}"%`
-        };
-      }
-
-      // --- FILTRE LEVEL ---
-      if (level !== "all") {
-        where.level = level;
-      }
-
-      // --- FETCH ---
-      const notifications = await Notification.findAll({
-        where,
-        order: [["createdAt", "DESC"]],
-      });
-
-      return res.json({ data: notifications });
-
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Erreur serveur" });
-    }
-  },
-
-};
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * RECUPERER LES NOTIFICATIONS D’UN USER (AUTONOME)
- */
-export const getUserNotifications = async (req, res) => {
+//Pour obtenir la listes des notifications en fonction des critères 
+export const getNotifications = async (req, res) => {
   try {
-    const userId = req.params.userId;
+    const {
+      scope,      // user | chantier | list | global  (OPTIONNEL)
+      target,     // userId | chantierId | array | "all" (OPTIONNEL)
+      level,      // all | private | hprivate (OPTIONNEL)
+      isRead      // true | false (OPTIONNEL)
+    } = req.query;
 
-    const notifications = await NotificationRecipient.findAll({
-      where: { userId },
+    const userId = req.user.id; // utilisateur connecté
+
+    // ---------------------------
+    // 1) Construire la condition de base
+    // ---------------------------
+
+    const whereNotif = {};
+    const whereRecipient = { userId };
+
+    // ---- Filtre sur le niveau ----
+    if (level) {
+      whereNotif.level = level;
+    }
+
+    // ---- Filtre lu / non lu ----
+    if (isRead === "true") whereRecipient.isRead = true;
+    if (isRead === "false") whereRecipient.isRead = false;
+
+    // ---------------------------
+    // 2) Filtrer par scope + target
+    // ---------------------------
+
+    if (scope) {
+      whereNotif.scope = scope;
+
+      /** ---------------- SCOPE = user ---------------- */
+      if (scope === "user") {
+        if (!target) {
+          return res.status(400).json({
+            message: "target doit être userId pour scope=user"
+          });
+        }
+
+        whereNotif.target = target;
+      }
+
+      /** ---------------- SCOPE = chantier ---------------- */
+      if (scope === "chantier") {
+        if (!target) {
+          return res.status(400).json({
+            message: "target doit contenir chantierId pour scope=chantier"
+          });
+        }
+
+        whereNotif.target = target;
+      }
+
+      /** ---------------- SCOPE = list ---------------- */
+      if (scope === "list") {
+        if (!target) {
+          return res.status(400).json({
+            message: "target doit être une liste d'IDs"
+          });
+        }
+
+        // target = "1,5,8" dans Postman ? → convertir automatiquement en tableau
+        const listIds = Array.isArray(target)
+          ? target
+          : String(target).split(",").map(Number);
+
+        whereNotif.target = JSON.stringify(listIds);
+      }
+
+      /** ---------------- SCOPE = global ---------------- */
+      if (scope === "global") {
+        whereNotif.target = "all";
+      }
+    }
+
+    // ---------------------------
+    // 3) Exécution de la requête
+    // ---------------------------
+
+    const notifications = await Notification.findAll({
+      where: whereNotif,
       include: [
         {
-          model: Notification,
-          as: "notification"
+          model: NotificationRecipient,
+          as: "NotificationRecipients",
+          required: true,
+          where: whereRecipient,
+          attributes: ["userId", "isRead", "readAt"]
         }
       ],
       order: [["createdAt", "DESC"]]
     });
 
-    res.json(notifications);
+    return res.status(200).json({
+      count: notifications.length,
+      data: notifications
+    });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Erreur serveur", error });
+    return res.status(500).json({ message: "Erreur serveur", error });
   }
 };
 
 
 
-/**
- * MARQUER UNE NOTIFICATION COMME LUE
- */
-export const markAsRead = async (req, res) => {
-  try {
-    const { userId, notificationId } = req.body;
+// supprimé une notification - suppression en cascade
 
-    if (!userId || !notificationId) {
-      return res.status(400).json({
-        message: "userId et notificationId sont obligatoires"
-      });
+export const deleteNotification = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deleted = await Notification.destroy({
+      where: { id }
+    });
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Notification non trouvée" });
     }
 
+    return res.status(200).json({ message: "Notification supprimée avec succès" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Erreur serveur", error });
+  }
+};
+
+
+
+
+
+//marquer comme lu 
+
+
+export const markNotificationAsRead = async (req, res) => {
+  try {
+    const { notificationId } = req.params;
+    const recipientId = req.user.id; // user connecté (token)
+
+    // Vérifier que la notification existe dans la table des destinataires
     const record = await NotificationRecipient.findOne({
-      where: { userId, notificationId },
+      where: {
+        notificationId,
+        recipientId
+      }
     });
 
     if (!record) {
       return res.status(404).json({
-        message: "Notification non trouvée pour cet utilisateur"
+        message: "Cette notification n'est pas attribuée à cet utilisateur"
       });
     }
 
-    record.isRead = true;
-    record.readAt = new Date();
-    await record.save();
+    // Si déjà lue, inutile de réécrire
+    if (record.isRead) {
+      return res.status(200).json({
+        message: "Notification déjà marquée comme lue",
+        notificationId,
+        recipientId
+      });
+    }
 
-    return res.json({ message: "Notification marquée comme lue" });
+    // Marquer comme lu
+    await record.update({
+      isRead: true,
+      readAt: new Date()
+    });
+
+    return res.status(200).json({
+      message: "Notification marquée comme lue",
+      notificationId,
+      recipientId
+    });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Erreur serveur", error });
+    return res.status(500).json({ message: "Erreur serveur", error });
   }
 };
+
+
+
+export const getNotificationById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Recherche de la notification avec ses destinataires
+    const notification = await Notification.findOne({
+      where: { id },
+      include: [
+        {
+          model: NotificationRecipient,
+          as: "NotificationRecipients",
+          attributes: ["id", "userId", "isRead", "readAt"]
+        }
+      ]
+    });
+
+    if (!notification) {
+      return res.status(404).json({ message: "Notification introuvable" });
+    }
+
+    return res.status(200).json({
+      message: "Notification récupérée avec succès",
+      data: notification
+    });
+
+  } catch (error) {
+    console.error("Erreur getNotificationById :", error);
+    return res.status(500).json({ message: "Erreur serveur", error });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
