@@ -37,31 +37,31 @@ export const getUserById = async (req, res) => {
 
 
 //modifier un utilisateur
-
 export const updateUser = async (req, res) => {
-   const { id } = req.params;
+    const { id } = req.params;
     const updatedUser = req.body;
 
     try {
         const user = await User.findByPk(id);
-        if (user) {
-
-            // Mise à jour sécurisée (pour éviter la modification de champs sensibles)
-            const allowedFields = ["name", "email", "phone", "status"];
-            const safeData = Object.keys(updatedUser)
-            .filter(key => allowedFields.includes(key))
-            .reduce((obj, key) => ({ ...obj, [key]: updatedData[key] }), {});
-
-
-            await user.update(safeData);
-            res.status(200).json({ data: user, message: "Utilisateur mis a jour avec succes" });
-        } else {
-            res.status(404).json({ message: "Utilisateur non trouve" });
+        if (!user) {
+            return res.status(404).json({ message: "Utilisateur non trouvé" });
         }
+
+        // Champs autorisés
+        const allowedFields = ["name", "email", "phone", "status"];
+        const safeData = Object.keys(updatedUser)
+            .filter(key => allowedFields.includes(key))
+            .reduce((obj, key) => ({ ...obj, [key]: updatedUser[key] }), {});
+
+        // Mettre à jour
+        await user.update(safeData);
+
+        res.status(200).json({ data: user, message: "Utilisateur mis à jour avec succès" });
+
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
-}
+};
 
 //supprimer un utilisateur
 export const deleteUser = async (req, res) => {
